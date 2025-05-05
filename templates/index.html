@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Eszközleltár</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Eszközleltár</h1>
+
+    <div class="form-container">
+        <form method="POST" action="/add">
+            <select id="category" name="category" onchange="updateBrandAndModel()" required>
+                <option value="Laptop">Laptop</option>
+                <option value="Telefon">Telefon</option>
+                <option value="Monitor">Monitor</option>
+            </select>
+            <select id="brand" name="brand" onchange="updateModelList()" required></select>
+            <select id="model" name="model" required></select>
+            <input name="serial" placeholder="Sorozatszám" required>
+            <input name="user" placeholder="Felhasználó" required>
+            <select name="location" required>
+                <option value="Bicske">Bicske</option>
+                <option value="Üllő">Üllő</option>
+            </select>
+            <select name="status" required>
+                <option value="Új">Új</option>
+                <option value="Használt">Használt</option>
+                <option value="Szervízben">Szervízben</option>
+            </select>
+            <input name="note" placeholder="Megjegyzés">
+            <input name="inventory_number" placeholder="Leltári szám" required>
+            <button type="submit">Hozzáadás</button>
+        </form>
+    </div>
+
+    <a href="/export_excel">📥 Excel export</a>
+
+        <form action="/import_excel" method="POST" enctype="multipart/form-data" style="text-align: center; margin-bottom: 30px;">
+            <input type="file" name="file" accept=".xlsx" required>
+            <button type="submit">📤 Excel import</button>
+        </form>
+
+
+    <div class="table-container">
+        <table id="deviceTable">
+            <thead>
+                <tr>
+                    <th>Felhasználó</th><th>Kategória</th><th>Márka</th><th>Modell</th><th>Sorozatszám</th>
+                    <th>Hely</th><th>Állapot</th><th>Megjegyzés</th><th>Leltári szám</th><th>QR</th><th>Törlés</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in devices %}
+                <tr>
+                    <td>{{ d.user }}</td>
+                    <td>{{ d.category }}</td>
+                    <td>{{ d.brand }}</td>
+                    <td>{{ d.model }}</td>
+                    <td>{{ d.serial }}</td>
+                    <td>{{ d.location }}</td>
+                    <td>{{ d.status }}</td>
+                    <td>{{ d.note }}</td>
+                    <td>{{ d.inventory_number }}</td>
+                    <td><img src="/{{ d.qr_code_path() }}" alt="QR"></td>
+                    <td><a href="/delete/{{ d.id }}">🗑️</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
